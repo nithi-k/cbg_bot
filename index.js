@@ -115,8 +115,3 @@ setInterval(() => {
     console.error('⚠️ Self-ping failed:', err.message);
   });
 }, 600000); // 10 minutes
-
-// Start server
-app.listen(3000, () => {
-  console.log('🚀 Server running at http://localhost:3000');
-});
