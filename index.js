@@ -10,6 +10,7 @@ app.use(bodyParser.json({
   }
 }));
 
+// LINE credentials
 const CHANNEL_SECRET = '30a5026799257744c6b46f02c7c70543';
 const CHANNEL_ACCESS_TOKEN = 'hybpljdf5wtfttwWD01HvOIwrg2aAvez0wGK/obXJXXgWpu64ZbbaJB6spQ3VgcT21Ogb1MBIu8oeskvpV8S7bp0SoV/1mnstEg4rl+k1I8xqPsrypahTlt7x/sT7wCf2HMW7rpxnp+X6rCTBmGXEgdB04t89/1O/w1cDnyilFU=';
 
@@ -29,15 +30,17 @@ app.post('/linebot', async (req, res) => {
 
   for (const event of events) {
     if (event.type === 'message' && event.message.type === 'text') {
+      const userMessage = event.message.text.trim();
+      const lowerMessage = userMessage.toLowerCase();
       const replyToken = event.replyToken;
-      const itemCode = event.message.text.trim();
 
+      // 🍍 Stock check logic
       try {
+        const itemCode = userMessage;
         const apiUrl = `http://223.27.194.89:8083/itemlocation/selectbyitemcode?compcode=100&branchcode=06&itemcode=${encodeURIComponent(itemCode)}`;
         const response = await axios.get(apiUrl);
         const data = response.data;
 
-        // Sum onhand by whCode
         const stockByWh = {};
         data.forEach(entry => {
           const wh = entry.whCode;
@@ -46,7 +49,6 @@ app.post('/linebot', async (req, res) => {
           stockByWh[wh] += onhand;
         });
 
-        // Format reply
         let message = `Stock for ${itemCode}:\n`;
         for (const [wh, qty] of Object.entries(stockByWh)) {
           message += `${wh}: ${qty} unit${qty !== 1 ? 's' : ''}\n`;
@@ -56,7 +58,6 @@ app.post('/linebot', async (req, res) => {
           message = `No stock found for ${itemCode}`;
         }
 
-        // Send reply to user
         await axios.post(
           'https://api.line.me/v2/bot/message/reply',
           {
@@ -78,7 +79,7 @@ app.post('/linebot', async (req, res) => {
           'https://api.line.me/v2/bot/message/reply',
           {
             replyToken,
-            messages: [{ type: 'text', text: `Error checking stock for ${itemCode}.` }]
+            messages: [{ type: 'text', text: `Error checking stock for ${userMessage}.` }]
           },
           {
             headers: {
@@ -94,6 +95,28 @@ app.post('/linebot', async (req, res) => {
   res.sendStatus(200);
 });
 
+app.listen(3000, () => {
+  console.log('🚀 Server running at http://localhost:3000');
+});
+
+// Optional route for health check
+app.get('/ping', (req, res) => {
+  res.send('🏓 Pong!');
+});
+
+// Self-ping every 10 minutes to keep Render app awake
+const SELF_URL = 'https://cbg-bot.onrender.com/ping';
+
+setInterval(() => {
+  console.log('⏱️ Pinging self to stay awake...');
+  https.get(SELF_URL, (res) => {
+    console.log(`✅ Self-ping status: ${res.statusCode}`);
+  }).on('error', (err) => {
+    console.error('⚠️ Self-ping failed:', err.message);
+  });
+}, 600000); // 10 minutes
+
+// Start server
 app.listen(3000, () => {
   console.log('🚀 Server running at http://localhost:3000');
 });
