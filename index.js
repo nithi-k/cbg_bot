@@ -2,6 +2,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const axios = require('axios');
 const crypto = require('crypto');
+const https = require('https');
+
 
 const app = express();
 app.use(bodyParser.json({
@@ -114,4 +116,4 @@ setInterval(() => {
   }).on('error', (err) => {
     console.error('⚠️ Self-ping failed:', err.message);
   });
-}, 600000); // 10 minutes
+}, 10); // 10 minutes 600000
