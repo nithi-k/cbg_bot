@@ -116,4 +116,4 @@ setInterval(() => {
   }).on('error', (err) => {
     console.error('⚠️ Self-ping failed:', err.message);
   });
-}, 10); // 10 minutes 600000
+}, 600000); // 10 minutes
