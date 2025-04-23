@@ -39,7 +39,7 @@ app.post('/linebot', async (req, res) => {
       // 🍍 Stock check logic
       try {
         const itemCode = userMessage;
-        const apiUrl = `http://223.27.194.89:8083/itemlocation/selectbyitemcode?compcode=100&branchcode=06&itemcode=${encodeURIComponent(itemCode)}`;
+        const apiUrl = `http://223.27.194.89:8083/itemlocation/selectbyitemcode?compcode=100&itemcode=${encodeURIComponent(itemCode)}`;
         const response = await axios.get(apiUrl);
         const data = response.data;
 
@@ -117,3 +117,4 @@ setInterval(() => {
     console.error('⚠️ Self-ping failed:', err.message);
   });
 }, 600000); // 10 minutes
+
