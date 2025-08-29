@@ -50,10 +50,10 @@ app.post('/linebot', async (req, res) => {
 
   // Map shirt type to allowed sizes (lowercase to match your sample)
   const SIZE_MAP = {
-    ag180: ['s','m','l','xl','2xl','3xl','4xl'],
-    ag210: ['xs','s','m','l','xl','2xl','3xl','4xl','5xl'],
-    ag240: ['m','l','xl','2xl','3xl','4xl','5xl'],
-    ag2310: ['m','l','xl','2xl','3xl','4xl'],
+    ag180: ['s','m','l','xl','xxl','3xl','4xl'],
+    ag210: ['xs','s','m','l','xl','xxl','3xl','4xl','5xl'],
+    ag240: ['m','l','xl','xxl','3xl','4xl','5xl'],
+    ag2310: ['m','l','xl','xxl','3xl','4xl'],
   };
 
   const parseAllPattern = (text) => {
@@ -73,10 +73,10 @@ app.post('/linebot', async (req, res) => {
     sizes.map(sz => `${type.toUpperCase()}-${color}-${sz}`);
 
   const stringifyByWh = (byWh) => {
-    const entries = Object.entries(byWh);
+    const entries = Object.entries(byWh).filter(([_, qty]) => qty > 0); // 👈 filter out 0
     if (!entries.length) return 'no stock';
     return entries.map(([wh, q]) => `${wh}: ${q}`).join(', ');
-  };
+  };  
 
   // ----- main loop -----
   for (const event of events) {
