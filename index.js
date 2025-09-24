@@ -42,27 +42,27 @@ const SIZE_MAP = {
 };
 
 const FRUIT_SERIES = [
-'FO',
-'FOC',
-'FOCP',
-'FOHZ',
-'FOK',
-'FOL',
-'FOPA',
-'FOPK',
-'FOPO',
-'FVCP',
-'LO',
-'VO']
+'fo',
+'foc',
+'focp',
+'fohz',
+'fok',
+'fol',
+'fopa',
+'fopk',
+'fopo',
+'fvcp',
+'lo',
+'vo']
 
 const parseAllPattern = (text) => {
   const parts = text.split('-').map(s => s.trim()).filter(Boolean);
   if (parts.length < 3) return null;
   const maybeAll = parts[parts.length - 1].toLowerCase();
   if (maybeAll !== 'all') return null;
-  const type = parts[0].toLowerCase();
+  var type = parts[0].toLowerCase();
   const color = parts.slice(1, parts.length - 1).join('-'); 
-  const isFruit = FRUIT_SERIES.includes(type.toUpperCase());
+  const isFruit = FRUIT_SERIES.includes(type);
   if (isFruit) {
     console.log(type + " is Fruit");
   } else {
