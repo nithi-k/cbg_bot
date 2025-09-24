@@ -68,7 +68,7 @@ const parseAllPattern = (text) => {
   } else {
     console.log(type + " is not Fruit");
   }
-  if (isFruit) { type = fruit; };
+  if (isFruit) { type = 'fruit'; };
   if (!SIZE_MAP[type]) return { type, color, sizes: null };
   return { type, color, sizes: SIZE_MAP[type] };
 };
