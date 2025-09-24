@@ -60,16 +60,12 @@ const parseAllPattern = (text) => {
   if (parts.length < 3) return null;
   const maybeAll = parts[parts.length - 1].toLowerCase();
   if (maybeAll !== 'all') return null;
-  var type = parts[0].toLowerCase();
+  const type = parts[0].toLowerCase();
+  var mappedType = type
   const color = parts.slice(1, parts.length - 1).join('-'); 
   const isFruit = FRUIT_SERIES.includes(type);
-  if (isFruit) {
-    console.log(type + " is Fruit");
-  } else {
-    console.log(type + " is not Fruit");
-  }
-  if (isFruit) { type = 'fruit'; };
-  if (!SIZE_MAP[type]) return { type, color, sizes: null };
+  if (isFruit) { mappedType = 'fruit'; };
+  if (!SIZE_MAP[mappedType]) return { type, color, sizes: null };
   return { type, color, sizes: SIZE_MAP[type] };
 };
 
