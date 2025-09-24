@@ -66,7 +66,7 @@ const parseAllPattern = (text) => {
   const isFruit = FRUIT_SERIES.includes(type);
   if (isFruit) { mappedType = 'fruit'; };
   if (!SIZE_MAP[mappedType]) return { type, color, sizes: null };
-  return { type, color, sizes: SIZE_MAP[type] };
+  return { type, color, sizes: SIZE_MAP[mappedType] };
 };
 
 const buildAllCodes = ({ type, color, sizes }) =>
