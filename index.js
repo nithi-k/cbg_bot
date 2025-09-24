@@ -38,7 +38,22 @@ const SIZE_MAP = {
   ag210: ['xs','s','m','l','xl','xxl','3xl','4xl','5xl'],
   ag240: ['m','l','xl','xxl','3xl','4xl','5xl'],
   ag2310: ['m','l','xl','xxl','3xl','4xl'],
+  fruit: ['s','m','l','xl','xxl','3xl','4xl']
 };
+
+const FRUIT_SERIES = [
+'FO',
+'FOC',
+'FOCP',
+'FOHZ',
+'FOK',
+'FOL',
+'FOPA',
+'FOPK',
+'FOPO',
+'FVCP',
+'LO',
+'VO']
 
 const parseAllPattern = (text) => {
   const parts = text.split('-').map(s => s.trim()).filter(Boolean);
@@ -47,6 +62,8 @@ const parseAllPattern = (text) => {
   if (maybeAll !== 'all') return null;
   const type = parts[0].toLowerCase();
   const color = parts.slice(1, parts.length - 1).join('-'); 
+  const isFruit = FRUIT_SERIES.includes(type.toUpperCase);
+  if (isFruit) { type = fruit; };
   if (!SIZE_MAP[type]) return { type, color, sizes: null };
   return { type, color, sizes: SIZE_MAP[type] };
 };
