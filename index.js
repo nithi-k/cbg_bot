@@ -62,11 +62,11 @@ const parseAllPattern = (text) => {
   if (maybeAll !== 'all') return null;
   const type = parts[0].toLowerCase();
   const color = parts.slice(1, parts.length - 1).join('-'); 
-  const isFruit = FRUIT_SERIES.includes(type.toUpperCase);
+  const isFruit = FRUIT_SERIES.includes(type.toUpperCase());
   if (isFruit) {
-    console.log(type + "is Fruit");
+    console.log(type + " is Fruit");
   } else {
-    console.log(type + "is not Fruit");
+    console.log(type + " is not Fruit");
   }
   if (isFruit) { type = fruit; };
   if (!SIZE_MAP[type]) return { type, color, sizes: null };
