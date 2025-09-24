@@ -38,22 +38,19 @@ const SIZE_MAP = {
   ag210: ['xs','s','m','l','xl','xxl','3xl','4xl','5xl'],
   ag240: ['m','l','xl','xxl','3xl','4xl','5xl'],
   ag2310: ['m','l','xl','xxl','3xl','4xl'],
-  fruit: ['s','m','l','xl','xxl','3xl','4xl']
+  fo: ['s','m','l','xl','xxl','3xl','4xl'],
+  foc: ['s','m','l','xl','xxl','3xl','4xl'],
+  focp: ['s','m','l','xl','xxl','3xl','4xl'],
+  fohz: ['s','m','l','xl','xxl','3xl','4xl'],
+  fok: ['s','m','l','xl','xxl','3xl','4xl'],
+  fopa: ['s','m','l','xl','xxl','3xl','4xl'],
+  fopk: ['s','m','l','xl','xxl','3xl','4xl'],
+  fopo: ['s','m','l','xl','xxl','3xl','4xl'],
+  fopo: ['s','m','l','xl','xxl','3xl','4xl'],
+  fvcp: ['s','m','l','xl','xxl','3xl','4xl'],
+  lo: ['s','m','l','xl','xxl','3xl','4xl'],
+  vo: ['s','m','l','xl','xxl','3xl','4xl'],
 };
-
-const FRUIT_SERIES = [
-'fo',
-'foc',
-'focp',
-'fohz',
-'fok',
-'fol',
-'fopa',
-'fopk',
-'fopo',
-'fvcp',
-'lo',
-'vo']
 
 const parseAllPattern = (text) => {
   const parts = text.split('-').map(s => s.trim()).filter(Boolean);
@@ -61,12 +58,9 @@ const parseAllPattern = (text) => {
   const maybeAll = parts[parts.length - 1].toLowerCase();
   if (maybeAll !== 'all') return null;
   const type = parts[0].toLowerCase();
-  var mappedType = type
   const color = parts.slice(1, parts.length - 1).join('-'); 
-  const isFruit = FRUIT_SERIES.includes(type);
-  if (isFruit) { mappedType = 'fruit'; };
-  if (!SIZE_MAP[mappedType]) return { type, color, sizes: null };
-  return { type, color, sizes: SIZE_MAP[mappedType] };
+  if (!SIZE_MAP[type]) return { type, color, sizes: null };
+  return { type, color, sizes: SIZE_MAP[type] };
 };
 
 const buildAllCodes = ({ type, color, sizes }) =>
