@@ -11,9 +11,9 @@ app.use(bodyParser.json({
   }
 }));
 
-// LINE credentials
-const CHANNEL_SECRET = '30a5026799257744c6b46f02c7c70543';
-const CHANNEL_ACCESS_TOKEN = 'hybpljdf5wtfttwWD01HvOIwrg2aAvez0wGK/obXJXXgWpu64ZbbaJB6spQ3VgcT21Ogb1MBIu8oeskvpV8S7bp0SoV/1mnstEg4rl+k1I8xqPsrypahTlt7x/sT7wCf2HMW7rpxnp+X6rCTBmGXEgdB04t89/1O/w1cDnyilFU=';
+// LINE credentials (แนะนำให้ใช้ process.env แทนการ hardcode)
+const CHANNEL_SECRET = 'YOUR_CHANNEL_SECRET';
+const CHANNEL_ACCESS_TOKEN = 'YOUR_CHANNEL_ACCESS_TOKEN';
 
 // ----- helpers -----
 const apiBase =
@@ -39,56 +39,53 @@ const fetchStockForCode = async (code) => {
    OPTIMIZED SIZE MAP
 ---------------------------------------------------- */
 
-// Shared sizes for common types
-const COMMON_SIZES = Object.freeze([
-  'xs', 's', 'm', 'l', 'xl', 'xxl', '3xl', '4xl'
-]);
+// Shared sizes
+const COMMON_SIZES = Object.freeze(['s', 'm', 'l', 'xl', 'xxl', '3xl', '4xl']);
 
+// ต้องใช้ตัวพิมพ์เล็กทั้งหมด (เพราะเราจะ .toLowerCase() ตอน parse)
 const COMMON_SIZE_TYPES = [
   'fo', 'foc', 'focp', 'fohz', 'fok',
   'fopa', 'fopk', 'fopo', 'fvcp', 'lo', 'vo',
 
-  // Added FM.BHZ*** codes
-  'FM.BHZ016',
-  'FM.BHZ037',
-  'FM.BHZ042',
-  'FM.BHZ053',
-  'FM.BHZ068',
-  'FM.BHZ069',
-  'FM.BHZ070',
-  'FM.BHZ072',
-  'FM.BHZ073',
-  'FM.BHZ075',
-  'FM.BHZ080',
-  'FM.BHZ083',
-  'FM.BHZ090',
-  'FM.BHZ094',
-  'FM.BHZ100',
-  'FM.BHZ101',
-  'FM.BHZ108',
-  'FM.BHZ115',
-  'FM.BHZ118',
-  'FM.BHZ122',
-  'FM.BHZ125',
-  'FM.BHZ129',
-  'FM.BHZ130',
-  'FM.BHZ136',
-  'FM.BHZ137',
-  'FM.BHZ138',
-  'FM.BHZ139',
-  'FM.BHZ140',
-  'FM.BHZ141',
-  'FM.BHZ151',
-  'FM.BHZ169',
-  'FM.BHZ195',
-  'FM.BHZ196',
-  'FM.BHZ201',
-  'FM.BHZ202',
-  'FM.BHZ206',
-  'FM.BHZ227'
+  'fm.bhz016',
+  'fm.bhz037',
+  'fm.bhz042',
+  'fm.bhz053',
+  'fm.bhz068',
+  'fm.bhz069',
+  'fm.bhz070',
+  'fm.bhz072',
+  'fm.bhz073',
+  'fm.bhz075',
+  'fm.bhz080',
+  'fm.bhz083',
+  'fm.bhz090',
+  'fm.bhz094',
+  'fm.bhz100',
+  'fm.bhz101',
+  'fm.bhz108',
+  'fm.bhz115',
+  'fm.bhz118',
+  'fm.bhz122',
+  'fm.bhz125',
+  'fm.bhz129',
+  'fm.bhz130',
+  'fm.bhz136',
+  'fm.bhz137',
+  'fm.bhz138',
+  'fm.bhz139',
+  'fm.bhz140',
+  'fm.bhz141',
+  'fm.bhz151',
+  'fm.bhz169',
+  'fm.bhz195',
+  'fm.bhz196',
+  'fm.bhz201',
+  'fm.bhz202',
+  'fm.bhz206',
+  'fm.bhz227',
 ];
 
-// Construct repeated mappings automatically
 const COMMON_TYPE_MAP = Object.fromEntries(
   COMMON_SIZE_TYPES.map(t => [t, COMMON_SIZES])
 );
@@ -100,25 +97,47 @@ const SIZE_MAP = {
   ag240: ['m', 'l', 'xl', 'xxl', '3xl', '4xl', '5xl'],
   ag2310: ['m', 'l', 'xl', 'xxl', '3xl', '4xl'],
 
-  // Insert all common types
+  // all common-size types share COMMON_SIZES
   ...COMMON_TYPE_MAP,
 };
 
+/* ----------------------------------------------------
+   -ALL parser ที่รองรับทั้ง item-all และ item-color-all
+---------------------------------------------------- */
+
 const parseAllPattern = (text) => {
   const parts = text.split('-').map(s => s.trim()).filter(Boolean);
+  if (parts.length < 2) return null; // อย่างน้อยต้องมี [type, 'all']
 
   const maybeAll = parts[parts.length - 1].toLowerCase();
   if (maybeAll !== 'all') return null;
 
   const type = parts[0].toLowerCase();
-  const color = parts.slice(1, parts.length - 1).join('-');
 
+  // case 1: item-all  (เช่น fm.bhz227-all)
+  if (parts.length === 2) {
+    const color = ''; // ไม่มีสี
+    if (!SIZE_MAP[type]) return { type, color, sizes: null };
+    return { type, color, sizes: SIZE_MAP[type] };
+  }
+
+  // case 2: item-color-all (เช่น ag180-red-all)
+  const color = parts.slice(1, parts.length - 1).join('-');
   if (!SIZE_MAP[type]) return { type, color, sizes: null };
   return { type, color, sizes: SIZE_MAP[type] };
 };
 
+/* ----------------------------------------------------
+   สร้าง item code list จาก type / color / sizes
+   รองรับทั้ง item-color-size และ item-size
+---------------------------------------------------- */
+
 const buildAllCodes = ({ type, color, sizes }) =>
-  sizes.map(sz => `${type.toUpperCase()}-${color}-${sz}`);
+  sizes.map(sz =>
+    color
+      ? `${type.toUpperCase()}-${color}-${sz}`  // item-color-size
+      : `${type.toUpperCase()}-${sz}`          // item-size
+  );
 
 const stringifyByWh = (byWh, indent = '   ') => {
   const entries = Object.entries(byWh).filter(([, qty]) => qty > 0);
@@ -149,22 +168,31 @@ app.post('/linebot', async (req, res) => {
 
       try {
         /* ----------------------------------------------------
-           HANDLE ALL-SIZE REQUESTS
+           HANDLE -ALL REQUESTS
+           รองรับ:
+           - item-all         (fm.bhz227-all)
+           - item-color-all   (ag180-red-all)
         ---------------------------------------------------- */
         const allReq = parseAllPattern(lowerMessage);
+
         if (allReq) {
           const { type, color, sizes } = allReq;
 
-          if (!SIZE_MAP[type]) {
-            const msg = `Unknown shirt type "${type.toUpperCase()}". Supported types: ${Object.keys(SIZE_MAP).join(', ').toUpperCase()}`;
+          if (!SIZE_MAP[type] || !sizes) {
+            const supported = Object.keys(SIZE_MAP)
+              .map(k => k.toUpperCase())
+              .join(', ');
+            const msg =
+              `Unknown shirt type "${type.toUpperCase()}".\n` +
+              `Supported types: ${supported}`;
             await axios.post(
               'https://api.line.me/v2/bot/message/reply',
               { replyToken, messages: [{ type: 'text', text: msg }] },
               {
                 headers: {
                   'Content-Type': 'application/json',
-                  'Authorization': `Bearer ${CHANNEL_ACCESS_TOKEN}`
-                }
+                  'Authorization': `Bearer ${CHANNEL_ACCESS_TOKEN}`,
+                },
               }
             );
             continue;
@@ -173,7 +201,11 @@ app.post('/linebot', async (req, res) => {
           const codes = buildAllCodes({ type, color, sizes });
           const results = await Promise.all(codes.map(fetchStockForCode));
 
-          let message = `Stock for ${type.toUpperCase()}-${color}-ALL\n`;
+          const titleBase = color
+            ? `${type.toUpperCase()}-${color}`
+            : type.toUpperCase();
+
+          let message = `Stock for ${titleBase}-ALL\n`;
           let anyStockFound = false;
 
           for (let i = 0; i < results.length; i++) {
@@ -197,17 +229,20 @@ app.post('/linebot', async (req, res) => {
             {
               headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${CHANNEL_ACCESS_TOKEN}`
-              }
+                'Authorization': `Bearer ${CHANNEL_ACCESS_TOKEN}`,
+              },
             }
           );
 
-          console.log(`✅ Replied with ALL-sizes stock for ${type.toUpperCase()}-${color}`);
+          console.log(`✅ Replied with ALL-sizes stock for ${titleBase}`);
           continue;
         }
 
         /* ----------------------------------------------------
            SINGLE PRODUCT CODE
+           เช่น:
+           - AG180-RED-M
+           - FM.BHZ227-M
         ---------------------------------------------------- */
         const itemCode = userMessage;
         const apiUrl = `${apiBase}${encodeURIComponent(itemCode)}`;
@@ -217,9 +252,9 @@ app.post('/linebot', async (req, res) => {
         const stockByWh = {};
         let total = 0;
 
-        data.forEach(entry => {
-          const wh = entry.whCode;
-          const onhand = Number(entry.onhand);
+        (data || []).forEach(entry => {
+          const wh = String(entry.whCode || '').trim() || 'UNKNOWN';
+          const onhand = Number(entry.onhand || 0);
           stockByWh[wh] = (stockByWh[wh] || 0) + onhand;
           total += onhand;
         });
@@ -238,8 +273,8 @@ app.post('/linebot', async (req, res) => {
           {
             headers: {
               'Content-Type': 'application/json',
-              'Authorization': `Bearer ${CHANNEL_ACCESS_TOKEN}`
-            }
+              'Authorization': `Bearer ${CHANNEL_ACCESS_TOKEN}`,
+            },
           }
         );
 
@@ -250,13 +285,13 @@ app.post('/linebot', async (req, res) => {
           'https://api.line.me/v2/bot/message/reply',
           {
             replyToken,
-            messages: [{ type: 'text', text: `Error checking stock for "${userMessage}".` }]
+            messages: [{ type: 'text', text: `Error checking stock for "${userMessage}".` }],
           },
           {
             headers: {
               'Content-Type': 'application/json',
-              'Authorization': `Bearer ${CHANNEL_ACCESS_TOKEN}`
-            }
+              'Authorization': `Bearer ${CHANNEL_ACCESS_TOKEN}`,
+            },
           }
         );
       }
@@ -275,7 +310,7 @@ app.get('/ping', (req, res) => {
   res.send('🏓 Pong!');
 });
 
-// Self-ping every 10 minutes to keep Render awake
+// Self-ping every 10 minutes to keep Render app awake
 const SELF_URL = 'https://cbg-bot.onrender.com/ping';
 setInterval(() => {
   console.log('⏱️ Pinging self to stay awake...');
@@ -284,4 +319,4 @@ setInterval(() => {
   }).on('error', (err) => {
     console.error('⚠️ Self-ping failed:', err.message);
   });
-}, 600000);
+}, 600000); // 10 minutes
