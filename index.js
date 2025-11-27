@@ -12,8 +12,8 @@ app.use(bodyParser.json({
 }));
 
 // LINE credentials (แนะนำให้ใช้ process.env แทนการ hardcode)
-const CHANNEL_SECRET = 'YOUR_CHANNEL_SECRET';
-const CHANNEL_ACCESS_TOKEN = 'YOUR_CHANNEL_ACCESS_TOKEN';
+const CHANNEL_SECRET = '30a5026799257744c6b46f02c7c70543';
+const CHANNEL_ACCESS_TOKEN = 'hybpljdf5wtfttwWD01HvOIwrg2aAvez0wGK/obXJXXgWpu64ZbbaJB6spQ3VgcT21Ogb1MBIu8oeskvpV8S7bp0SoV/1mnstEg4rl+k1I8xqPsrypahTlt7x/sT7wCf2HMW7rpxnp+X6rCTBmGXEgdB04t89/1O/w1cDnyilFU=';
 
 // ----- helpers -----
 const apiBase =
