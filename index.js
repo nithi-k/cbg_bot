@@ -106,7 +106,6 @@ const SIZE_MAP = {
 
 const parseAllPattern = (text) => {
   const parts = text.split('-').map(s => s.trim()).filter(Boolean);
-  if (parts.length < 3) return null;
 
   const maybeAll = parts[parts.length - 1].toLowerCase();
   if (maybeAll !== 'all') return null;
