@@ -40,7 +40,7 @@ const fetchStockForCode = async (code) => {
 ---------------------------------------------------- */
 
 // Shared sizes
-const COMMON_SIZES = Object.freeze(['s', 'm', 'l', 'xl', 'xxl', '3xl', '4xl']);
+const COMMON_SIZES = Object.freeze(['xs', 's', 'm', 'l', 'xl', 'xxl', '3xl', '4xl']);
 
 // ต้องใช้ตัวพิมพ์เล็กทั้งหมด (เพราะเราจะ .toLowerCase() ตอน parse)
 const COMMON_SIZE_TYPES = [
